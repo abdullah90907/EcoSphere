@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Sparkles, Shield, Globe, Zap, Leaf, CheckCircle2 } from 'lucide-react';
 import PublicNavbar from './PublicNavbar';
 import PublicFooter from './PublicFooter';
@@ -10,38 +10,144 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mousePosRef = useRef({ x: 0, y: 0 });
+  const targetMousePosRef = useRef({ x: 0, y: 0 });
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    let animationFrameId: number;
+    let particles: { 
+      x: number; 
+      y: number; 
+      size: number; 
+      speedX: number; 
+      speedY: number; 
+      vx: number; 
+      vy: number; 
+    }[] = [];
+    
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    };
+    
+    const initParticles = () => {
+      particles = [];
+      const numberOfParticles = Math.floor((canvas.width * canvas.height) / 10000);
+      for (let i = 0; i < numberOfParticles; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        particles.push({
+          x,
+          y,
+          size: Math.random() * 2 + 0.8,
+          speedX: (Math.random() - 0.5) * 0.3,
+          speedY: (Math.random() - 0.5) * 0.3,
+          vx: 0,
+          vy: 0,
+        });
+      }
+    };
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      targetMousePosRef.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      mousePosRef.current.x += (targetMousePosRef.current.x - mousePosRef.current.x) * 0.15;
+      mousePosRef.current.y += (targetMousePosRef.current.y - mousePosRef.current.y) * 0.15;
+      
+      particles.forEach((particle, index) => {
+        particle.x += particle.speedX + particle.vx;
+        particle.y += particle.speedY + particle.vy;
+        
+        particle.vx *= 0.95;
+        particle.vy *= 0.95;
+        
+        const dx = mousePosRef.current.x - particle.x;
+        const dy = mousePosRef.current.y - particle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const maxDistance = 180;
+        
+        if (distance < maxDistance) {
+          const forceDirectionX = dx / distance;
+          const forceDirectionY = dy / distance;
+          const force = Math.pow((maxDistance - distance) / maxDistance, 2) * 10;
+          particle.vx -= forceDirectionX * force;
+          particle.vy -= forceDirectionY * force;
+        }
+        
+        if (particle.x < -50) particle.x = canvas.width + 50;
+        if (particle.x > canvas.width + 50) particle.x = -50;
+        if (particle.y < -50) particle.y = canvas.height + 50;
+        if (particle.y > canvas.height + 50) particle.y = -50;
+        
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fillStyle = distance < maxDistance 
+          ? `rgba(52, 211, 153, ${0.5 + (1 - distance / maxDistance) * 0.7})` 
+          : 'rgba(52, 211, 153, 0.35)';
+        ctx.fill();
+        
+        if (distance < maxDistance / 2) {
+          ctx.beginPath();
+          ctx.arc(particle.x, particle.y, particle.size * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(52, 211, 153, ${0.12 * (1 - distance / (maxDistance / 2))})`;
+          ctx.fill();
+        }
+        
+        particles.slice(index + 1).forEach(otherParticle => {
+          const dx2 = particle.x - otherParticle.x;
+          const dy2 = particle.y - otherParticle.y;
+          const dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+          
+          if (dist2 < 160) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(52, 211, 153, ${0.18 * (1 - dist2 / 160)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(otherParticle.x, otherParticle.y);
+            ctx.stroke();
+          }
+        });
+      });
+      
+      animationFrameId = requestAnimationFrame(animate);
+    };
+    
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', handleMouseMove);
+    resize();
+    animate();
+    
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+  
   return (
     <div className="min-h-screen bg-[#052d1e] text-white selection:bg-emerald-500/30 overflow-x-hidden font-['Inter']">
-      <style>{`
-        @keyframes subtle-move {
-          0% { background-position: 0% 0%; }
-          100% { background-position: 100% 100%; }
-        }
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        .bg-grid-pattern {
-          background-image: radial-gradient(circle at 1px 1px, rgba(16, 185, 129, 0.05) 1px, transparent 0);
-          background-size: 40px 40px;
-        }
-        .animate-subtle-move {
-          animation: subtle-move 60s linear infinite;
-        }
-      `}</style>
-      
       <PublicNavbar currentModule={ModuleType.HOME} setModule={setModule} onLogin={onGetStarted} />
 
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 pb-12 px-6 overflow-hidden">
-        {/* Modern Minimalist Background */}
-        <div className="absolute inset-0 bg-grid-pattern animate-subtle-move pointer-events-none"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#052d1e]/50 to-[#052d1e] pointer-events-none"></div>
-        
-        {/* Subtle Glowing Nodes */}
-        <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-emerald-400 rounded-full shadow-[0_0_15px_rgba(52,211,153,0.8)] animate-pulse"></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-lime-400 rounded-full shadow-[0_0_15px_rgba(163,230,53,0.8)] animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-teal-400 rounded-full shadow-[0_0_15px_rgba(45,212,191,0.8)] animate-pulse" style={{ animationDelay: '2s' }}></div>
+        {/* Interactive Canvas Background */}
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 pointer-events-none z-0"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#052d1e]/50 to-[#052d1e] pointer-events-none z-0"></div>
 
         <div className="max-w-7xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/20 px-4 py-2 rounded-full mb-10 animate-fade-in shadow-2xl backdrop-blur-xl">
