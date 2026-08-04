@@ -56,6 +56,29 @@ const startServer = async () => {
     return { lastInsertRowid };
   };
 
+  // Seed default demo user if not exists
+  try {
+    const existingDemo = queryDB('SELECT * FROM users WHERE email = ?', ['demo@ecosphere.com']);
+    if (existingDemo.length === 0) {
+      const hashedPassword = await bcrypt.hash('demo123', 10);
+      const info = runDB('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [
+        'Demo Guardian',
+        'demo@ecosphere.com',
+        hashedPassword
+      ]);
+      runDB('INSERT INTO user_stats (user_id, food_saved, water_saved, carbon_offset, alerts_count) VALUES (?, ?, ?, ?, ?)', [
+        info.lastInsertRowid,
+        24.5,
+        150.0,
+        45.8,
+        2
+      ]);
+      console.log('Seeded demo account: demo@ecosphere.com / demo123');
+    }
+  } catch (seedErr) {
+    console.error('Error seeding demo account:', seedErr);
+  }
+
   // Try to start Python service (optional)
   try {
     const pythonProcess = spawn('python', ['server/inference_service.py'], {

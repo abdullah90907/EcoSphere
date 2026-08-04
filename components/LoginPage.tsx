@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, ArrowRight, Mail, Lock, Github, Chrome } from 'lucide-react';
+import { Leaf, ArrowRight, Mail, Lock, Github, Chrome, Sparkles, ArrowLeft } from 'lucide-react';
 import { ModuleType, User } from '../types';
 import { authService } from '../services/authService';
 
@@ -14,12 +14,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, setModule }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (loginEmail: string, loginPass: string) => {
     setError('');
     setIsLoading(true);
     try {
-      const data = await authService.login(email, password);
+      const data = await authService.login(loginEmail, loginPass);
       onLogin(data.user);
     } catch (err: any) {
       setError(err.message);
@@ -28,13 +27,34 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, setModule }) => {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleLogin(email, password);
+  };
+
+  const handleQuickDemoLogin = () => {
+    setEmail('demo@ecosphere.com');
+    setPassword('demo123');
+    handleLogin('demo@ecosphere.com', 'demo123');
+  };
+
   return (
     <div className="min-h-screen bg-[#053d26] flex items-center justify-center p-6 relative overflow-hidden font-['Inter']">
+      {/* Top Floating Back to Home Button */}
+      <button 
+        type="button"
+        onClick={() => setModule(ModuleType.HOME)}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-emerald-950/80 border border-emerald-500/30 backdrop-blur-xl text-emerald-300 hover:text-white hover:bg-emerald-900 hover:border-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl hover:scale-105 active:scale-95 group"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform text-emerald-400" />
+        <span>Back to Home</span>
+      </button>
+
       {/* Background Effects */}
       <div className="absolute top-[-10%] left-[-5%] w-[60%] h-[60%] bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
       <div className="absolute bottom-[-10%] right-[-5%] w-[60%] h-[60%] bg-teal-600/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
       
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-emerald-950/50 backdrop-blur-2xl rounded-[2.5rem] border border-emerald-500/10 overflow-hidden shadow-2xl relative z-10">
+      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-emerald-950/50 backdrop-blur-2xl rounded-[2.5rem] border border-emerald-500/10 overflow-hidden shadow-2xl relative z-10 mt-12 lg:mt-0">
         {/* Left Side - Info */}
         <div className="p-12 hidden lg:flex flex-col justify-between bg-gradient-to-br from-emerald-900/50 to-emerald-950/50 border-r border-emerald-500/10">
           <div>
@@ -77,22 +97,50 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, setModule }) => {
 
         {/* Right Side - Form */}
         <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center">
-          <div className="lg:hidden flex justify-center mb-8">
-             <div 
-              className="flex items-center space-x-2 cursor-pointer group"
-              onClick={() => setModule(ModuleType.HOME)}
-            >
-              <div className="p-2 bg-gradient-to-br from-emerald-400 to-lime-400 rounded-xl group-hover:rotate-12 transition-transform">
-                <Leaf size={22} className="text-emerald-950" />
+          {/* Header & Mobile Logo */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-left">
+              <h3 className="text-2xl font-black text-white uppercase tracking-tight">Welcome Back</h3>
+              <p className="text-emerald-100/40 text-xs mt-1">Enter your credentials to continue</p>
+            </div>
+            
+            <div className="lg:hidden flex items-center space-x-2 cursor-pointer group" onClick={() => setModule(ModuleType.HOME)}>
+              <div className="p-1.5 bg-gradient-to-br from-emerald-400 to-lime-400 rounded-lg">
+                <Leaf size={16} className="text-emerald-950" />
               </div>
-              <span className="text-2xl font-black tracking-tighter uppercase italic text-white">Ecosphere</span>
+              <span className="text-lg font-black tracking-tighter uppercase italic text-white">Ecosphere</span>
             </div>
           </div>
 
-          <div className="mb-10 text-center lg:text-left">
-            <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Welcome Back</h3>
-            <p className="text-emerald-100/40 text-sm">Enter your credentials to continue</p>
-            {error && <p className="text-red-400 text-xs mt-4 font-bold">{error}</p>}
+          {error && <p className="text-red-400 text-xs mb-4 font-bold">{error}</p>}
+
+          {/* Demo Account Quick Access Card */}
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-emerald-900/40 via-emerald-800/20 to-teal-900/40 border border-emerald-500/20 backdrop-blur-md relative overflow-hidden group">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-gradient-to-br from-emerald-400 to-lime-400 rounded-xl shadow-md text-emerald-950 flex-shrink-0">
+                  <Sparkles size={18} className="font-bold animate-pulse" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black uppercase tracking-wider text-white">Demo Account</span>
+                    <span className="px-2 py-0.5 text-[8px] font-black uppercase tracking-widest bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-full">1-Click</span>
+                  </div>
+                  <p className="text-[10px] text-emerald-100/60 font-mono mt-0.5">
+                    demo@ecosphere.com • demo123
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleQuickDemoLogin}
+                disabled={isLoading}
+                className="px-3.5 py-2.5 bg-emerald-500 hover:bg-lime-400 text-emerald-950 font-black text-[10px] uppercase tracking-wider rounded-xl transition-all shadow-lg hover:scale-105 active:scale-95 flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50"
+              >
+                <span>Demo Login</span>
+                <ArrowRight size={14} />
+              </button>
+            </div>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>

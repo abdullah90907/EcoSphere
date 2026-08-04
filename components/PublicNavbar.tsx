@@ -1,5 +1,5 @@
 import React from 'react';
-import { Leaf, Menu, X } from 'lucide-react';
+import { Leaf, Menu, X, Sparkles } from 'lucide-react';
 import { ModuleType } from '../types';
 
 interface PublicNavbarProps {
@@ -47,12 +47,12 @@ const PublicNavbar: React.FC<PublicNavbarProps> = ({ currentModule, setModule, o
         </div>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-1">
+        <div className="hidden md:flex items-center space-x-3">
           {navItems.map((item, i) => (
             <button
               key={item.type}
               onClick={() => setModule(item.type)}
-              className={`px-5 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-full relative group animate-fade-in`}
+              className={`px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] transition-all rounded-full relative group animate-fade-in`}
               style={{ animationDelay: `${i * 0.1}s` }}
             >
               <span className={`relative z-10 ${
@@ -67,15 +67,23 @@ const PublicNavbar: React.FC<PublicNavbarProps> = ({ currentModule, setModule, o
             </button>
           ))}
           
-          <div className="w-8"></div>
+          <div className="w-2"></div>
+
+          <button
+            onClick={() => setModule(ModuleType.LOGIN)}
+            className="group relative bg-gradient-to-r from-emerald-400 to-lime-400 text-emerald-950 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.18em] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-emerald-500/20 flex items-center gap-2 animate-fade-in"
+            style={{ animationDelay: '0.4s' }}
+          >
+            <Sparkles size={14} className="animate-pulse" />
+            <span>Demo Login</span>
+          </button>
 
           <button
             onClick={onLogin}
-            className="group relative bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl animate-fade-in"
-            style={{ animationDelay: '0.4s' }}
+            className="group relative bg-white/10 border border-emerald-500/20 text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.18em] overflow-hidden transition-all hover:bg-white/20 hover:scale-105 active:scale-95 shadow-xl animate-fade-in"
+            style={{ animationDelay: '0.5s' }}
           >
-            <span className="relative z-10 group-hover:text-white transition-colors duration-300">Login</span>
-            <div className="absolute inset-0 bg-emerald-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            <span className="relative z-10">Login</span>
           </button>
         </div>
 
@@ -101,8 +109,21 @@ const PublicNavbar: React.FC<PublicNavbarProps> = ({ currentModule, setModule, o
             </button>
           ))}
           <button
-            onClick={onLogin}
-            className="w-full bg-white text-black py-4 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]"
+            onClick={() => {
+              setModule(ModuleType.LOGIN);
+              setIsOpen(false);
+            }}
+            className="w-full bg-gradient-to-r from-emerald-400 to-lime-400 text-emerald-950 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2"
+          >
+            <Sparkles size={16} />
+            <span>Try Demo Account</span>
+          </button>
+          <button
+            onClick={() => {
+              onLogin();
+              setIsOpen(false);
+            }}
+            className="w-full bg-white/10 border border-emerald-500/20 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em]"
           >
             Login
           </button>

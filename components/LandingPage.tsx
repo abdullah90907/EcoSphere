@@ -169,10 +169,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
             to restore balance to our global environment through edge-compute intelligence.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <button 
               onClick={onGetStarted}
-              className="group relative bg-emerald-500 text-emerald-950 px-10 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-2xl"
+              className="group relative bg-emerald-500 text-emerald-950 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-2xl"
             >
               <span className="relative z-10">Initialize System</span>
               <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
@@ -180,8 +180,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
             </button>
             
             <button 
+              onClick={() => setModule(ModuleType.LOGIN)}
+              className="group relative bg-gradient-to-r from-emerald-500/20 via-emerald-400/20 to-teal-500/20 border border-emerald-400/40 text-emerald-300 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-2.5 backdrop-blur-md transition-all hover:bg-emerald-500/30 hover:border-emerald-400 hover:scale-[1.02] active:scale-95 shadow-xl"
+            >
+              <Sparkles size={16} className="text-lime-400 group-hover:rotate-12 transition-transform animate-pulse" />
+              <span>Try Demo Account</span>
+            </button>
+
+            <button 
               onClick={() => setModule(ModuleType.FEATURES)}
-              className="px-10 py-4 rounded-xl border border-emerald-500/10 bg-white/5 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all backdrop-blur-md text-emerald-100/80"
+              className="px-8 py-4 rounded-xl border border-emerald-500/10 bg-white/5 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all backdrop-blur-md text-emerald-100/80"
             >
               Explore Modules
             </button>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Leaf, ArrowRight, Mail, Lock, User as UserIcon, ShieldCheck } from 'lucide-react';
+import { Leaf, ArrowRight, Mail, Lock, User as UserIcon, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { ModuleType, User } from '../types';
 import { authService } from '../services/authService';
 
@@ -32,30 +32,39 @@ const SignupPage: React.FC<SignupPageProps> = ({ onSignup, setModule }) => {
 
   return (
     <div className="min-h-screen bg-[#053d26] flex items-center justify-center p-6 relative overflow-hidden font-['Inter']">
+      {/* Top Floating Back to Home Button */}
+      <button 
+        type="button"
+        onClick={() => setModule(ModuleType.HOME)}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-emerald-950/80 border border-emerald-500/30 backdrop-blur-xl text-emerald-300 hover:text-white hover:bg-emerald-900 hover:border-emerald-400 text-[10px] font-black uppercase tracking-[0.2em] transition-all shadow-2xl hover:scale-105 active:scale-95 group"
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform text-emerald-400" />
+        <span>Back to Home</span>
+      </button>
+
       {/* Background Effects */}
       <div className="absolute top-[-10%] right-[-5%] w-[60%] h-[60%] bg-emerald-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
       <div className="absolute bottom-[-10%] left-[-5%] w-[60%] h-[60%] bg-teal-600/10 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
       
-      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-emerald-950/50 backdrop-blur-2xl rounded-[2.5rem] border border-emerald-500/10 overflow-hidden shadow-2xl relative z-10">
+      <div className="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 bg-emerald-950/50 backdrop-blur-2xl rounded-[2.5rem] border border-emerald-500/10 overflow-hidden shadow-2xl relative z-10 mt-12 lg:mt-0">
         {/* Left Side - Form */}
         <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center order-2 lg:order-1">
-          <div className="lg:hidden flex justify-center mb-8">
-             <div 
-              className="flex items-center space-x-2 cursor-pointer group"
-              onClick={() => setModule(ModuleType.HOME)}
-            >
-              <div className="p-2 bg-gradient-to-br from-emerald-400 to-lime-400 rounded-xl group-hover:rotate-12 transition-transform">
-                <Leaf size={22} className="text-emerald-950" />
+          {/* Header & Mobile Logo */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-left">
+              <h3 className="text-2xl font-black text-white uppercase tracking-tight">Initialize Node</h3>
+              <p className="text-emerald-100/40 text-xs mt-1">Join the global environmental network</p>
+            </div>
+            
+            <div className="lg:hidden flex items-center space-x-2 cursor-pointer group" onClick={() => setModule(ModuleType.HOME)}>
+              <div className="p-1.5 bg-gradient-to-br from-emerald-400 to-lime-400 rounded-lg">
+                <Leaf size={16} className="text-emerald-950" />
               </div>
-              <span className="text-2xl font-black tracking-tighter uppercase italic text-white">Ecosphere</span>
+              <span className="text-lg font-black tracking-tighter uppercase italic text-white">Ecosphere</span>
             </div>
           </div>
 
-          <div className="mb-10 text-center lg:text-left">
-            <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Initialize Node</h3>
-            <p className="text-emerald-100/40 text-sm">Join the global environmental network</p>
-            {error && <p className="text-red-400 text-xs mt-4 font-bold">{error}</p>}
-          </div>
+          {error && <p className="text-red-400 text-xs mb-4 font-bold">{error}</p>}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2">
@@ -127,6 +136,13 @@ const SignupPage: React.FC<SignupPageProps> = ({ onSignup, setModule }) => {
               className="text-emerald-400 hover:text-white ml-2 transition-colors"
             >
               Sign In
+            </button>
+            <span className="mx-2 text-emerald-500/30">•</span>
+            <button 
+              onClick={() => setModule(ModuleType.LOGIN)}
+              className="text-lime-400 hover:text-white transition-colors"
+            >
+              Use Demo Account
             </button>
           </p>
         </div>
