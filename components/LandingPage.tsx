@@ -1,18 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Sparkles, Shield, Globe, Zap, Leaf, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Sparkles, Shield, Globe, Zap, Play, X } from 'lucide-react';
 import PublicNavbar from './PublicNavbar';
 import PublicFooter from './PublicFooter';
 import { ModuleType } from '../types';
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onDemoLogin: () => void;
   setModule: (module: ModuleType) => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onDemoLogin, setModule }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mousePosRef = useRef({ x: 0, y: 0 });
   const targetMousePosRef = useRef({ x: 0, y: 0 });
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const YOUTUBE_VIDEO_ID = 'pnZGJhS3rOg';
   
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -135,76 +138,99 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowVideoModal(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   
   return (
     <div className="min-h-screen bg-[#052d1e] text-white selection:bg-emerald-500/30 overflow-x-hidden font-['Inter']">
       <PublicNavbar currentModule={ModuleType.HOME} setModule={setModule} onLogin={onGetStarted} />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20 pb-12 px-6 overflow-hidden">
+      {/* ── Hero Section ── */}
+      <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
         {/* Interactive Canvas Background */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 pointer-events-none z-0"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#052d1e]/50 to-[#052d1e] pointer-events-none z-0"></div>
+        <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#052d1e]/50 to-[#052d1e] pointer-events-none z-0" />
 
-        <div className="max-w-7xl mx-auto relative z-10 text-center">
-          <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/20 px-4 py-2 rounded-full mb-10 animate-fade-in shadow-2xl backdrop-blur-xl">
-            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+        <div className="max-w-5xl mx-auto relative z-10 text-center w-full">
+          {/* Badge */}
+          <div className="inline-flex items-center space-x-2 bg-emerald-950/80 border border-emerald-500/20 px-4 py-2 rounded-full mb-8 sm:mb-10 animate-fade-in shadow-2xl backdrop-blur-xl">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-emerald-400/80">Ecosystem Protocol v2.0</span>
           </div>
-          
-          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] md:leading-[1] mb-8 animate-reveal">
-            REDEFINING <br />
+
+          {/* Headline */}
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[6rem] font-black tracking-tight leading-[1.05] mb-6 sm:mb-8 animate-reveal">
+            REDEFINING{' '}
             <span className="relative inline-block">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-lime-300 to-teal-400 italic">ECOLOGY</span>
             </span>
-            <br />
-            BY DESIGN
+            {' '}BY DESIGN
           </h1>
-          
-          <p className="max-w-2xl mx-auto text-sm md:text-lg text-emerald-100/60 leading-relaxed mb-12 animate-fade-in-up font-medium">
-            Deploying hyper-intelligent monitoring nodes and precision data models <br className="hidden md:block" />
-            to restore balance to our global environment through edge-compute intelligence.
+
+          {/* Sub-headline */}
+          <p className="max-w-xl sm:max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-emerald-100/60 leading-relaxed mb-10 sm:mb-12 animate-fade-in-up font-medium px-2">
+            Deploying hyper-intelligent monitoring nodes and precision data models to restore balance
+            to our global environment through edge-compute intelligence.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <button 
+          {/* CTA Buttons */}
+          <div
+            className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 animate-fade-in-up"
+            style={{ animationDelay: '0.4s' }}
+          >
+            {/* Initialize System */}
+            <button
+              id="hero-get-started"
               onClick={onGetStarted}
-              className="group relative bg-emerald-500 text-emerald-950 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-2xl"
+              className="group relative bg-emerald-500 text-emerald-950 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-2xl w-full sm:w-auto justify-center"
             >
               <span className="relative z-10">Initialize System</span>
               <ArrowRight size={16} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-              <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+              <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
             </button>
-            
-            <button 
-              onClick={() => setModule(ModuleType.LOGIN)}
-              className="group relative bg-gradient-to-r from-emerald-500/20 via-emerald-400/20 to-teal-500/20 border border-emerald-400/40 text-emerald-300 px-8 py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-2.5 backdrop-blur-md transition-all hover:bg-emerald-500/30 hover:border-emerald-400 hover:scale-[1.02] active:scale-95 shadow-xl"
+
+            {/* Try Demo Account — goes straight to Dashboard */}
+            <button
+              id="hero-demo-account"
+              onClick={onDemoLogin}
+              className="group relative bg-gradient-to-r from-emerald-500/20 via-emerald-400/20 to-teal-500/20 border border-emerald-400/40 text-emerald-300 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-2.5 backdrop-blur-md transition-all hover:bg-emerald-500/30 hover:border-emerald-400 hover:scale-[1.02] active:scale-95 shadow-xl w-full sm:w-auto justify-center"
             >
               <Sparkles size={16} className="text-lime-400 group-hover:rotate-12 transition-transform animate-pulse" />
               <span>Try Demo Account</span>
             </button>
 
-            <button 
-              onClick={() => setModule(ModuleType.FEATURES)}
-              className="px-8 py-4 rounded-xl border border-emerald-500/10 bg-white/5 font-black text-[11px] uppercase tracking-[0.2em] hover:bg-white/10 transition-all backdrop-blur-md text-emerald-100/80"
+            {/* Watch Demo Video */}
+            <button
+              id="hero-watch-demo"
+              onClick={() => setShowVideoModal(true)}
+              className="group relative border border-white/10 bg-white/5 text-emerald-100/80 px-7 py-3.5 sm:px-8 sm:py-4 rounded-xl font-black text-[11px] uppercase tracking-[0.2em] flex items-center gap-2.5 backdrop-blur-md transition-all hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] active:scale-95 w-full sm:w-auto justify-center"
             >
-              Explore Modules
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/30 border border-emerald-400/50 group-hover:bg-emerald-500/50 transition-colors">
+                <Play size={10} className="text-emerald-300 translate-x-[1px]" fill="currentColor" />
+              </span>
+              <span>Watch Demo</span>
             </button>
           </div>
 
           {/* Status Bar */}
-          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto border-t border-emerald-500/5 pt-10 animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <div
+            className="mt-16 sm:mt-20 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 max-w-3xl mx-auto border-t border-emerald-500/5 pt-8 sm:pt-10 animate-fade-in"
+            style={{ animationDelay: '0.6s' }}
+          >
             {[
               { label: 'Active Nodes', val: '12,482' },
               { label: 'Carbon Offset', val: '842.5t' },
               { label: 'Latency', val: '42ms' },
-              { label: 'AI Precision', val: '98.2%' }
+              { label: 'AI Precision', val: '98.2%' },
             ].map((stat, i) => (
               <div key={i} className="text-center">
-                <div className="text-xl font-bold text-white mb-1 tracking-tight">{stat.val}</div>
+                <div className="text-xl sm:text-2xl font-bold text-white mb-1 tracking-tight">{stat.val}</div>
                 <div className="text-[8px] font-bold uppercase tracking-widest text-emerald-500/40">{stat.label}</div>
               </div>
             ))}
@@ -214,26 +240,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
 
       {/* Advanced Technology Section removed as it was redundant */}
 
-      {/* Core Pillars - Redesigned */}
-      <section className="py-24 px-6 bg-[#053d26]">
+      {/* Core Pillars */}
+      <section className="py-20 sm:py-24 px-4 sm:px-6 bg-[#053d26]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 sm:gap-12 lg:gap-16">
             {[
-              { 
-                icon: <Globe className="text-emerald-400" size={28} />, 
-                title: 'Global Impact', 
-                desc: 'Real-time environmental monitoring across 150+ international zones.'
-              },
-              { 
-                icon: <Shield className="text-lime-400" size={28} />, 
-                title: 'Zero Waste', 
-                desc: 'Intelligent systems designed to eliminate food and industrial waste streams.'
-              },
-              { 
-                icon: <Zap className="text-teal-400" size={28} />, 
-                title: 'Visionary Tech', 
-                desc: 'Advanced computer vision and data modeling for a sustainable future.'
-              }
+              { icon: <Globe className="text-emerald-400" size={28} />, title: 'Global Impact', desc: 'Real-time environmental monitoring across 150+ international zones.' },
+              { icon: <Shield className="text-lime-400" size={28} />, title: 'Zero Waste', desc: 'Intelligent systems designed to eliminate food and industrial waste streams.' },
+              { icon: <Zap className="text-teal-400" size={28} />, title: 'Visionary Tech', desc: 'Advanced computer vision and data modeling for a sustainable future.' },
             ].map((pillar, i) => (
               <div key={i} className="group relative">
                 <div className="relative z-10 pl-4">
@@ -250,19 +264,19 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
       </section>
 
       {/* Trust Section */}
-      <section className="py-20 px-6 border-y border-emerald-500/5 bg-emerald-900/10">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 border-y border-emerald-500/5 bg-emerald-900/10">
         <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/60 mb-12">The Vanguard of Sustainability</h2>
-          <div className="flex flex-wrap justify-center gap-10 md:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all duration-700 hover:opacity-100">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-500/60 mb-10 sm:mb-12">The Vanguard of Sustainability</h2>
+          <div className="flex flex-wrap justify-center gap-8 sm:gap-10 md:gap-24 opacity-30 grayscale hover:grayscale-0 transition-all duration-700 hover:opacity-100">
             {['TERRA', 'AQUA', 'AERO', 'FLORA', 'ORBIS'].map(brand => (
-              <span key={brand} className="text-2xl md:text-4xl font-black italic tracking-tighter cursor-default">{brand}</span>
+              <span key={brand} className="text-2xl sm:text-3xl md:text-4xl font-black italic tracking-tighter cursor-default">{brand}</span>
             ))}
           </div>
         </div>
       </section>
 
       {/* Stats Breakdown */}
-      <section className="py-24 px-6 relative overflow-hidden bg-emerald-950">
+      <section className="py-20 sm:py-24 px-4 sm:px-6 relative overflow-hidden bg-emerald-950">
         <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
           {[
             { value: '12.5k', label: 'KG Food Saved' },
@@ -271,7 +285,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
             { value: '24/7', label: 'Active Support' },
           ].map((stat, i) => (
             <div key={i} className="text-center group">
-              <div className="text-4xl md:text-6xl font-black mb-2 group-hover:text-emerald-400 transition-all duration-500 italic tracking-tighter">{stat.value}</div>
+              <div className="text-4xl sm:text-5xl md:text-6xl font-black mb-2 group-hover:text-emerald-400 transition-all duration-500 italic tracking-tighter">{stat.value}</div>
               <div className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/40">{stat.label}</div>
             </div>
           ))}
@@ -280,18 +294,50 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
 
       <PublicFooter setModule={setModule} />
 
+      {/* ── YouTube Video Modal ── */}
+      {showVideoModal && (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-8"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Demo video"
+        >
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowVideoModal(false)}
+          />
+          {/* Modal Panel */}
+          <div className="relative z-10 w-full max-w-4xl animate-modal-in">
+            <button
+              id="video-modal-close"
+              onClick={() => setShowVideoModal(false)}
+              className="absolute -top-12 right-0 flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest"
+              aria-label="Close video"
+            >
+              <X size={16} /> Close
+            </button>
+            {/* 16:9 iframe wrapper */}
+            <div
+              className="relative w-full rounded-2xl overflow-hidden border border-emerald-500/20 shadow-[0_0_80px_rgba(52,211,153,0.15)]"
+              style={{ paddingTop: '56.25%' }}
+            >
+              <iframe
+                className="absolute inset-0 w-full h-full"
+                src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&rel=0&modestbranding=1`}
+                title="EcoSphere Demo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes reveal {
           0% { transform: translateY(30px); opacity: 0; }
           100% { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes reveal-left {
-          0% { transform: translateX(-30px); opacity: 0; }
-          100% { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes reveal-right {
-          0% { transform: translateX(30px); opacity: 0; }
-          100% { transform: translateX(0); opacity: 1; }
         }
         @keyframes fade-in-up {
           0% { transform: translateY(20px); opacity: 0; }
@@ -309,13 +355,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, setModule }) =>
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-10px); }
         }
+        @keyframes modal-in {
+          0% { transform: scale(0.92) translateY(20px); opacity: 0; }
+          100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
         .animate-reveal { animation: reveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-reveal-left { animation: reveal-left 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-reveal-right { animation: reveal-right 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in-up { opacity: 0; animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade-in { animation: fade-in 1.2s ease-out forwards; }
         .animate-pulse-slow { animation: pulse-slow 8s ease-in-out infinite; }
         .animate-float { animation: float 5s ease-in-out infinite; }
+        .animate-modal-in { animation: modal-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       `}</style>
     </div>
   );

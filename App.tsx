@@ -32,6 +32,19 @@ const App: React.FC = () => {
     setCurrentModule(ModuleType.DASHBOARD);
   };
 
+  const handleDemoLogin = () => {
+    const demoUser = {
+      id: 1,
+      name: 'Demo Guardian',
+      email: 'demo@ecosphere.com',
+      profile_image: ''
+    };
+    localStorage.setItem('eco_token', 'demo-jwt-token-ecosphere');
+    localStorage.setItem('eco_user', JSON.stringify(demoUser));
+    setAuth({ isAuthenticated: true, user: demoUser });
+    setCurrentModule(ModuleType.DASHBOARD);
+  };
+
   const handleLogout = () => {
     authService.logout();
     setAuth({ isAuthenticated: false, user: null });
@@ -53,7 +66,7 @@ const App: React.FC = () => {
           return <ImpactPage setModule={setCurrentModule} onGetStarted={() => setCurrentModule(ModuleType.LOGIN)} />;
         case ModuleType.HOME:
         default:
-          return <LandingPage setModule={setCurrentModule} onGetStarted={() => setCurrentModule(ModuleType.LOGIN)} />;
+          return <LandingPage setModule={setCurrentModule} onGetStarted={() => setCurrentModule(ModuleType.LOGIN)} onDemoLogin={handleDemoLogin} />;
       }
     }
 
